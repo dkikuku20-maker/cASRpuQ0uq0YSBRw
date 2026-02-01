@@ -178,10 +178,3 @@ Every design choice is intentional and defensible in both technical and non-tech
 
 ---
 
-If you want next:
-
-* 🔹 a **shorter README**
-* 🔹 a **“For Recruiters” section**
-* 🔹 or a **demo script explanation**
-
-Just say the word.
