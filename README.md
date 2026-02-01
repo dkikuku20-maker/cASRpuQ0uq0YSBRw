@@ -1,7 +1,3 @@
-Perfect. Below is a **clean, professional GitHub README** written **exactly at the level a professor + recruiter expects**, but still **easy to understand**.
-You can paste this directly into `README.md`.
-
----
 
 # 📄 MonReader — Page Flip Detection from a Single Image
 
