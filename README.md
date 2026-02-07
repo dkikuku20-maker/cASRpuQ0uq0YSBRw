@@ -1,6 +1,4 @@
-Perfect — this is a **strong project**, and you’re absolutely right to want a **clean, recruiter-ready GitHub README**. I’ll give you a **complete README.md** you can paste directly into your repo, written in **clear, low-level English**, business-focused, and aligned with **GitHub best practices** from your template .
 
----
 
 # 📄 MonReader — Page Flip Detection from a Single Image
 
@@ -191,12 +189,7 @@ Focused on **human-centered AI and accessibility**
 🔗 LinkedIn: *(add link)*
 🔗 Portfolio: *(add link)*
 
----
 
-If you want, next I can:
-
-* Turn this into a **LinkedIn post**
-* Write **SMART resume bullets**
 * Help you answer **“Do you have customers?”** professionally
 * Create a **non-technical demo script for recruiters**
 
