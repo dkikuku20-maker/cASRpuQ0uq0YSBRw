@@ -1,0 +1,6 @@
+torch
+torchvision
+torchmetrics
+pandas
+numpy
+Pillow
