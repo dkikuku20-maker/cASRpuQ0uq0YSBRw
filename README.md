@@ -186,7 +186,6 @@ jupyter notebook MonReader.ipynb
 Machine Learning & Data Science
 Focused on **human-centered AI and accessibility**
 
-🔗 LinkedIn: *(add link)*
-🔗 Portfolio: *(add link)*
+
 
 
