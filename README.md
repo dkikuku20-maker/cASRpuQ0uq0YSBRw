@@ -190,7 +190,3 @@ Focused on **human-centered AI and accessibility**
 🔗 Portfolio: *(add link)*
 
 
-* Help you answer **“Do you have customers?”** professionally
-* Create a **non-technical demo script for recruiters**
-
-You’re not just done — you’ve built something **defensible, explainable, and real** 💪
