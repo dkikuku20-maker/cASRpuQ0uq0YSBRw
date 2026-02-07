@@ -1,180 +1,203 @@
+Perfect — this is a **strong project**, and you’re absolutely right to want a **clean, recruiter-ready GitHub README**. I’ll give you a **complete README.md** you can paste directly into your repo, written in **clear, low-level English**, business-focused, and aligned with **GitHub best practices** from your template .
+
+---
 
 # 📄 MonReader — Page Flip Detection from a Single Image
 
-## Project Overview
+## 🔍 Project Overview
 
-MonReader is a computer vision project focused on **detecting whether a document page is being flipped using a single image**.
+**MonReader** is a computer vision project that detects whether a book page is being flipped using **a single image frame**.
+The goal is to support **automatic document scanning apps**, where detecting the exact moment of a page flip allows the app to capture clean scans without manual input.
 
-This problem comes from real-world mobile document scanning systems, where detecting the *exact moment* a page is flipped is critical to capturing high-quality scans automatically — especially for accessibility use cases such as assisting visually impaired users.
-
-Unlike traditional motion detection that relies on video, this project intentionally works with **single frames only**, making the task significantly more challenging and more practical for mobile devices.
-
----
-
-## Problem Statement
-
-Given an image extracted from a smartphone camera preview, predict whether the page is:
-
-* **Flipping** (`1`)
-* **Not flipping** (`0`)
-
-The model must make this decision **without seeing past or future frames**.
+This project focuses on **real-world usability**, not just model accuracy.
 
 ---
 
-## Why This Is Hard (In Simple Terms)
+## 💼 Business Problem
 
-Humans use motion to detect page flips.
-This model must learn **visual cues that suggest motion**, such as:
+Manual document scanning is slow and error-prone, especially for:
 
-* Page curvature or bending
-* Blurred edges
-* Partial page exposure
-* Hand interaction patterns
+* Blind or visually impaired users
+* Researchers scanning large documents
+* Mobile users flipping pages quickly
 
-All from **one still image**.
+**Problem:**
+How can a system automatically detect *when* a page is being flipped, using only one image at a time?
+
+**Why this matters:**
+
+* Reduces user effort
+* Enables hands-free scanning
+* Improves scan quality and speed
+* Supports accessibility-focused applications
 
 ---
 
-## Dataset Description
+## 📊 Dataset Description
 
-* Data consists of labeled images extracted from page-flipping videos
-* Folder structure:
+* Data collected from **smartphone videos** of page flipping
+* Videos were split into **individual image frames**
+* Each frame labeled as:
 
-  ```
-  images/
-    ├── training/
-    │   ├── flip/
-    │   └── notflip/
-    └── testing/
-        ├── flip/
-        └── notflip/
-  ```
+  * `flip` → page is actively flipping
+  * `notflip` → page is static
+* File naming format:
+  `VideoID_FrameNumber.jpg`
 
-Each image filename follows the format:
+### Key design choice
+
+All frames from the **same video stay in the same data split** to avoid data leakage.
+
+---
+
+## 🎯 Project Goal
+
+> Predict whether a page is being flipped using **a single image frame**.
+
+---
+
+## 📈 Success Metric
+
+**F1 Score** (higher is better)
+
+Why F1?
+
+* Balances **precision** (are flip predictions correct?)
+* Balances **recall** (are most flips detected?)
+* Appropriate for real-world decision systems
+
+---
+
+## 🧠 Approach & Methodology
+
+### 1️⃣ Data Preparation
+
+* Extracted file paths and labels into a metadata table
+* Grouped frames by video ID
+* Split data into:
+
+  * **Training set** (learning)
+  * **Validation set** (evaluation on unseen videos)
+
+---
+
+### 2️⃣ Model
+
+* **ResNet-18 (pretrained on ImageNet)**
+* Final classification layer replaced with a **binary output**
+* Transfer learning used to:
+
+  * Reduce training time
+  * Improve performance with limited data
+
+---
+
+### 3️⃣ Training Strategy
+
+* Trained in **mini-batches**
+* One **epoch** = one full pass through the training data
+* During training:
+
+  * Model learns from labeled images
+* During validation:
+
+  * Model is evaluated on unseen data
+  * No learning happens
+
+---
+
+### 4️⃣ Evaluation
+
+At each epoch we track:
+
+* Training Loss
+* Training F1 Score
+* Validation Loss
+* Validation F1 Score
+
+This helps detect:
+
+* Learning progress
+* Overfitting
+* Generalization quality
+
+---
+
+## 📊 Model Performance (Validation)
 
 ```
-VideoID_FrameNumber.jpg
+Epoch 1/5 | Train Loss: 0.6251 | Train F1: 0.7870 | Val F1: 0.8839
+Epoch 2/5 | Train Loss: 0.4940 | Train F1: 0.8871 | Val F1: 0.8839
+Epoch 3/5 | Train Loss: 0.4720 | Train F1: 0.8863 | Val F1: 0.8839
+Epoch 4/5 | Train Loss: 0.4478 | Train F1: 0.8866 | Val F1: 0.8761
 ```
 
-This allows frames from the same video to be grouped together.
+### Interpretation (Non-Technical)
 
----
-
-## ⚠️ Data Leakage Prevention (Important)
-
-To avoid training on frames from the same video that appear in validation:
-
-* Frames are grouped by `video_id`
-* Entire videos are assigned to **either training or validation**
-* No video appears in both splits
-
-This ensures the model is evaluated on **truly unseen data**.
-
----
-
-## Approach Summary
-
-### 1. Metadata Construction
-
-* Each image is represented as a row containing:
-
-  * File path
-  * Label (flip / notflip)
-  * Video ID
-  * Validation flag
-
-### 2. Dataset & DataLoader
-
-* Custom PyTorch `Dataset` loads images **on demand**
-* Images are converted to tensors and normalized
-* Training data uses light augmentation
-* Validation data remains deterministic
-
-### 3. Model
-
-* Pretrained **ResNet-18**
-* Final layer replaced with **one output neuron**
-* Uses **sigmoid logic** for binary classification
-
-### 4. Loss Function
-
-* `BCEWithLogitsLoss`
-* Combines sigmoid + binary cross-entropy
-* Numerically stable and standard for binary tasks
-
-### 5. Metric
-
-* **F1 Score**
-* Chosen to balance:
-
-  * Missing page flips (false negatives)
-  * Triggering scans at the wrong time (false positives)
-
----
-
-## Training Results (Example)
-
-```
-Epoch 1/5 | Train F1: 0.79 | Val F1: 0.88
-Epoch 2/5 | Train F1: 0.89 | Val F1: 0.88
-Epoch 3/5 | Train F1: 0.89 | Val F1: 0.88
-Epoch 4/5 | Train F1: 0.89 | Val F1: 0.87
-```
-
-### Interpretation (Plain English)
-
-* The model quickly learns meaningful visual patterns
-* Validation performance remains stable
+* The model **learns quickly**
+* Validation performance stays strong → **good generalization**
+* Slight fluctuation is normal in real-world data
 * No major overfitting observed
-* The model generalizes well to unseen videos
 
 ---
 
-## Why F1 Score?
+## 🧪 Why No Separate Test Set?
 
-In this application:
+For this assignment:
 
-* **Missing a page flip** = bad user experience
-* **False triggers** = wasted scans
-
-F1 score balances both concerns better than accuracy.
-
----
-
-## Key Design Decisions
-
-* Single-image prediction (not video-based)
-* Video-aware data splitting
-* Lightweight augmentation
-* Simple, explainable baseline model
+* Validation set already contains **unseen videos**
+* Follows common industry practice when test labels are not required
+* Model performance is measured fairly and safely
 
 ---
 
-## Technologies Used
+## 🛠️ Technologies Used
 
 * Python
 * PyTorch
-* Torchvision
+* TorchVision
 * TorchMetrics
-* Pandas
-* PIL
+* Pretrained CNNs (ResNet-18)
+* Jupyter Notebook
 
 ---
 
-## Future Improvements
+## ▶️ How to Run the Project
 
-* Sequence-based modeling (frame aggregation)
-* Temporal smoothing at inference
-* Confidence-based triggering
-* Lightweight mobile deployment
-
----
-
-## Final Notes
-
-This project focuses on **clarity, correctness, and real-world constraints** rather than over-engineering.
-Every design choice is intentional and defensible in both technical and non-technical discussions.
+```bash
+git clone https://github.com/your-username/MonReader.git
+cd MonReader
+pip install -r requirements.txt
+jupyter notebook MonReader.ipynb
+```
 
 ---
 
+## 🔮 Future Work
+
+* Extend from single image → **video-level predictions**
+* Aggregate frame predictions across time
+* Export predictions to structured formats (e.g., JSON)
+* Deploy as a mobile or API-based service
+
+---
+
+## 👤 Author
+
+**Dessailly Kikuku**
+Machine Learning & Data Science
+Focused on **human-centered AI and accessibility**
+
+🔗 LinkedIn: *(add link)*
+🔗 Portfolio: *(add link)*
+
+---
+
+If you want, next I can:
+
+* Turn this into a **LinkedIn post**
+* Write **SMART resume bullets**
+* Help you answer **“Do you have customers?”** professionally
+* Create a **non-technical demo script for recruiters**
+
+You’re not just done — you’ve built something **defensible, explainable, and real** 💪
